@@ -828,12 +828,6 @@ void Widget::hideMainForms(GenericChatroomWidget* chatroomWidget)
     activeChatroomWidget = chatroomWidget;
 }
 
-void Widget::onUsernameChanged(const QString& newUsername, const QString& oldUsername)
-{
-    setUsername(oldUsername);               // restore old username until Core tells us to set it
-    Nexus::getCore()->setUsername(newUsername);
-}
-
 void Widget::setUsername(const QString& username)
 {
     if (username.isEmpty())
@@ -1848,7 +1842,7 @@ void Widget::clearAllReceipts()
 {
     QList<Friend*> frnds = FriendList::getAllFriends();
     for (Friend *f : frnds)
-        f->getChatForm()->getOfflineMsgEngine()->removeAllReciepts();
+        f->getChatForm()->getOfflineMsgEngine()->removeAllReceipts();
 }
 
 void Widget::reloadTheme()

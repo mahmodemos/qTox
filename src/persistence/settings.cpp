@@ -97,6 +97,7 @@ void Settings::loadGlobal()
     if (QFile(globalSettingsFile).exists())
     {
         QSettings ps(globalSettingsFile, QSettings::IniFormat);
+        ps.setIniCodec("UTF-8");
         ps.beginGroup("General");
             makeToxPortable = ps.value("makeToxPortable", false).toBool();
         ps.endGroup();
@@ -119,6 +120,7 @@ void Settings::loadGlobal()
     qDebug() << "Loading settings from " + filePath;
 
     QSettings s(filePath, QSettings::IniFormat);
+    s.setIniCodec("UTF-8");
     s.beginGroup("Login");
         autoLogin = s.value("autoLogin", false).toBool();
     s.endGroup();
@@ -246,6 +248,7 @@ void Settings::loadGlobal()
     if (dhtServerList.isEmpty())
     {
         QSettings rcs(":/conf/settings.ini", QSettings::IniFormat);
+        rcs.setIniCodec("UTF-8");
         rcs.beginGroup("DHT Server");
             int serverListSize = rcs.beginReadArray("dhtServerList");
             for (int i = 0; i < serverListSize; i ++)
@@ -265,7 +268,7 @@ void Settings::loadGlobal()
     loaded = true;
 }
 
-void Settings::loadpersonal()
+void Settings::loadPersonal()
 {
     Profile* profile = Nexus::getProfile();
     if (!profile)
@@ -273,10 +276,10 @@ void Settings::loadpersonal()
         qCritical() << "No active profile, couldn't load personal settings";
         return;
     }
-    loadpersonal(profile);
+    loadPersonal(profile);
 }
 
-void Settings::loadpersonal(Profile* profile)
+void Settings::loadPersonal(Profile* profile)
 {
     QMutexLocker locker{&bigLock};
 
@@ -350,6 +353,7 @@ void Settings::saveGlobal()
     qDebug() << "Saving global settings at " + path;
 
     QSettings s(path, QSettings::IniFormat);
+    s.setIniCodec("UTF-8");
 
     s.clear();
 
@@ -537,6 +541,9 @@ QString Settings::getSettingsDirPath()
 #ifdef Q_OS_WIN
     return QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator()
                            + "AppData" + QDir::separator() + "Roaming" + QDir::separator() + "tox")+QDir::separator();
+#elif defined(Q_OS_OSX)
+    return QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::HomeLocation) + QDir::separator()
+                           + "Library" + QDir::separator() + "Application Support" + QDir::separator() + "Tox")+QDir::separator();
 #else
     return QDir::cleanPath(QStandardPaths::writableLocation(QStandardPaths::ConfigLocation)
                            + QDir::separator() + "tox")+QDir::separator();
@@ -1512,6 +1519,7 @@ void Settings::createPersonal(QString basename)
     qDebug() << "Creating new profile settings in " << path;
 
     QSettings ps(path, QSettings::IniFormat);
+    ps.setIniCodec("UTF-8");
     ps.beginGroup("Friends");
         ps.beginWriteArray("Friend", 0);
         ps.endArray();
